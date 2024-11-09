@@ -17,7 +17,6 @@ def load_gtfs_data(folder_path):
     return gtfs_files
 
 
-# Path to your unzipped GTFS folder
 gtfs_folder_path = "Google_Transit.zip"
 gtfs_data = load_gtfs_data(gtfs_folder_path)
 
@@ -37,38 +36,52 @@ def fetch_realtime_data(endpoint):
         print(f"Error fetching data from {endpoint}: {e}")
         return None
 
-trip_updates_url = "https://transitapi.brampton.ca/TripUpdates/TripUpdates.json"
-vehicle_positions_url = "https://transitapi.brampton.ca/VehiclePositions/VehiclePositions.json"
-service_alerts_url = "https://transitapi.brampton.ca/ServiceAlerts/ServiceAlerts.json"
+trip_updates_url = "https://nextride.brampton.ca:81/API/TripUpdates?format=json"
+vehicle_positions_url = "https://nextride.brampton.ca:81/API/VehiclePositions?format=json"
+service_alerts_url = "https://nextride.brampton.ca:81/API/ServiceAlerts?format=json"
 trip_updates = fetch_realtime_data(trip_updates_url)
 vehicle_positions = fetch_realtime_data(vehicle_positions_url)
 service_alerts = fetch_realtime_data(service_alerts_url)
 
 
 # Pharsing through Data, i need to see it.
-if trip_updates:
+if trip_updates: # trip_id = specific buss, route_id = tranist route, stop_id =a specific stop along the route
+    # important for arrival and departure delays.
     print("\nTrip Updates:")
     for entity in trip_updates.get("entity", []):
         trip_update = entity.get("trip_update")
-        if trip_update:
-            trip_id = trip_update["trip"].get("trip_id")
-            print(f"Trip ID: {trip_id}")
-            for stop_time_update in trip_update.get("stop_time_update", []):
-                stop_id = stop_time_update.get("stop_id")
-                arrival_time = stop_time_update.get("arrival", {}).get("time")
-                departure_time = stop_time_update.get("departure", {}).get("time")
-                print(f"  Stop ID: {stop_id}, Arrival Time: {arrival_time}, Departure Time: {departure_time}")
+        if not trip_update:
+            continue
 
+        trip = trip_update.get("trip", {})
+        trip_id = trip.get("trip_id", "No trip ID")
+        route_id = trip.get("route_id", "No route ID")
+        print(f"Trip ID: {trip_id}, Route ID: {route_id}")
 
-if vehicle_positions:
-    print("\nVehicle Positions:")
-    for entity in vehicle_positions.get("entity", []):
-        vehicle = entity.get("vehicle")
-        if vehicle:
-            vehicle_id = vehicle.get("vehicle", {}).get("id")
-            latitude = vehicle.get("position", {}).get("latitude")
-            longitude = vehicle.get("position", {}).get("longitude")
-            print(f"Vehicle ID: {vehicle_id}, Latitude: {latitude}, Longitude: {longitude}")
+        stop_time_updates = trip_update.get("stop_time_update")
+        if stop_time_updates:
+            for stop_time_update in stop_time_updates:
+                stop_id = stop_time_update.get("stop_id", "No stop ID")
+
+                arrival = stop_time_update.get("arrival") or {}
+                arrival_delay = arrival.get("delay", "No arrival delay")
+
+                departure = stop_time_update.get("departure") or {}
+                departure_delay = departure.get("delay", "No departure delay")
+
+                print(f"  Stop ID: {stop_id}, Arrival Delay: {arrival_delay}, Departure Delay: {departure_delay}")
+        else:
+            print("No stop_time_update available for this trip.")
+
+# if vehicle_positions:
+#     print("\nVehicle Positions:")
+#     for entity in vehicle_positions.get("entity", []):
+#         vehicle = entity.get("vehicle")
+#         if vehicle:
+#             vehicle_id = vehicle.get("vehicle", {}).get("id")
+#             latitude = vehicle.get("position", {}).get("latitude")
+#             longitude = vehicle.get("position", {}).get("longitude")
+#             print(f"Vehicle ID: {vehicle_id}, Latitude: {latitude}, Longitude: {longitude}")
 
 
 if service_alerts:
