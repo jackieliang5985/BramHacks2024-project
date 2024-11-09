@@ -73,15 +73,15 @@ if trip_updates: # trip_id = specific buss, route_id = tranist route, stop_id =a
         else:
             print("No stop_time_update available for this trip.")
 
-# if vehicle_positions:
-#     print("\nVehicle Positions:")
-#     for entity in vehicle_positions.get("entity", []):
-#         vehicle = entity.get("vehicle")
-#         if vehicle:
-#             vehicle_id = vehicle.get("vehicle", {}).get("id")
-#             latitude = vehicle.get("position", {}).get("latitude")
-#             longitude = vehicle.get("position", {}).get("longitude")
-#             print(f"Vehicle ID: {vehicle_id}, Latitude: {latitude}, Longitude: {longitude}")
+if vehicle_positions:
+    print("\nVehicle Positions:")
+    for entity in vehicle_positions.get("entity", []):
+        vehicle = entity.get("vehicle")
+        if vehicle:
+            vehicle_id = vehicle.get("vehicle", {}).get("id")
+            latitude = vehicle.get("position", {}).get("latitude")
+            longitude = vehicle.get("position", {}).get("longitude")
+            print(f"Vehicle ID: {vehicle_id}, Latitude: {latitude}, Longitude: {longitude}")
 
 
 if service_alerts:
