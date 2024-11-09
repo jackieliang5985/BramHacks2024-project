@@ -2,6 +2,50 @@ from backend.Data import gtfs_data
 from numpy import inf
 from test import result
 
+
+import pandas as pd
+from shapely.geometry import Point
+import geopandas as gpd
+
+
+def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='census_tract_id', num_stops=5):
+    """
+    Finds a specified number of bus stops inside a given danger tract.
+
+    Parameters:
+        danger_tract_id (float): The tract ID of the danger area.
+        bus_stops_data (DataFrame): DataFrame containing bus stops and associated tract IDs.
+        tract_column (str): Name of the column in bus_stops_data that contains the tract ID.
+        num_stops (int): The number of stops to return inside the danger tract.
+
+    Returns:
+        DataFrame: A DataFrame with the specified number of stops from the danger tract.
+    """
+    # Ensure the tract_column is converted to float
+    bus_stops_data[tract_column] = pd.to_numeric(bus_stops_data[tract_column], errors='coerce')
+
+    # Filter stops inside the danger tract
+    stops_in_danger_tract = bus_stops_data[bus_stops_data[tract_column] == danger_tract_id]
+
+    # If fewer stops are available than requested, return all stops in the tract
+    selected_stops = stops_in_danger_tract if len(stops_in_danger_tract) <= num_stops else stops_in_danger_tract.sample(
+        n=num_stops)
+
+    # Print the selected stops and their details
+    # print(f"Stops inside danger tract {danger_tract_id}:")
+    # print(selected_stops[['stop_id']].to_string(index=False))
+    # stopids = selected_stops['stop_lat', 'stop_lon'].tolist()
+    lat = selected_stops['stop_lat'].tolist()
+    lon = selected_stops['stop_lon'].tolist()
+
+    coords = list(zip(lat, lon))
+    # print(stopids)
+    print(coords)
+
+    return coords
+
+
+
 # Assuming 'unique_wards' contains a list of ward IDs
 unique_wards = result['census_tract_id'].drop_duplicates()
 unique_wards = [float(unique) for unique in unique_wards]
@@ -26,30 +70,30 @@ def find_closest_distance(initial_coords, emergency_wards, all_wards, offset):
     safe_zone_bus_stops = find_wards(all_wards, emergency_wards, offset)
 
     min_distance = inf
-    closest_stop = None
+    closest_stop = []
 
-    # Step 2: Extract bus stop data from 'stops.txt' (assuming it's in the format of latitude and longitude)
     stops_data = gtfs_data["stops.txt"]  # Assuming 'stops.txt' is the key in gtfs_data
 
     # Step 3: Loop through safe zone bus stops to find the closest one
     for spot in safe_zone_bus_stops:
         # Get latitude and longitude for the bus stop corresponding to the ward
         stop_data = [result['stop_id'] == spot]  # Assuming 'ward' corresponds to 'stop_id'
-
         if not stop_data == []:
             stop_coords = (result['stop_lat'].values[0], result['stop_lon'].values[0])
 
             # Calculate distance from initial coordinates to bus stop coordinates
-            distance = calculate_distance(initial_coords, stop_coords)
+            for i in initial_coords:
+                distance = calculate_distance(i, stop_coords)
 
             # Update minimum distance and closest stop
-            if distance < min_distance:
-                min_distance = distance
-                closest_stop = result['stop_id'].values[0]
+                if distance < min_distance:
+                    min_distance = distance
+                    closest_stop.append(result['stop_id'].values[0])
+            min_distance = inf
 
     return closest_stop
 # Example of usage
 emergency_wards = [5350576.69]  # Replace this with actual emergency ward IDs
-k = find_closest_distance((43.765355,-79.724787), emergency_wards, unique_wards, 0.05)
+k = find_closest_distance(find_stops_in_danger_tract(5350576.69, result, "census_tract_id"), emergency_wards, unique_wards, 0.05)
 
 print(k)
