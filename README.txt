@@ -1,10 +1,12 @@
-BT Pulse
-A real-time transit feedback tool, with information displayed to riders and Brampton Transit
-to help improve their services. Users can report an overall rating for the route they ride, alongisde
-aspects including departure time, arrival time, overcrowding, and clealiness. The main page will display
-all of the Brampton Transit routes. Once you click on your desired route, the page will display a real-time
-outage graph, alongside a rating out of 5 stars. Below, you can find an option to submit feedback for the route,
-alongside the ratings for the other aspects mentioned. Additionally, if the route is GREEN (electric buses),
-we can display a special icon indicating "green travel", which will further encourage riders.
-Through analyzing the feedback given, Brampton Transit can implement further measures and policies,
-such as replacing routes which have overcrowding with electric buses, to drastically decrease the carbon footprint.
+BramEvac
+Idea: Emergency evacuation system (website) using Brampton Transit. In the case of an emergency,
+instead of everyone evacuating in their own car, we can utilize Brampton buses to evacuate people
+more efficiently. During the recent Alberta wildfire, we saw the huge lineup of cars waiting to leave.
+A singular bus can hold up to 75 people while taking up only as much space as 2 cars.
+Therefore, using buses to evacuate people would make the evacuation procedure significantly faster.
+The idea is scalable from events including riots and threat situations to natural disasters
+in the future due to climate change.
+Resources/Libraries needed:
+Flask
+Requests
+googlemaps
