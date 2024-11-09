@@ -17,7 +17,7 @@ def load_gtfs_data(folder_path):
     return gtfs_files
 
 
-gtfs_folder_path = "Google_Transit.zip"
+gtfs_folder_path = "Google_Transit"
 gtfs_data = load_gtfs_data(gtfs_folder_path)
 
 # Loaded CSV files

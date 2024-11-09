@@ -1,7 +1,7 @@
 import pandas as pd
 from shapely.geometry import Point
 import geopandas as gpd
-bus_stops_df = pd.read_csv('../Google_Transit/stops.txt', sep=',' )
+bus_stops_df = pd.read_csv('Google_Transit/stops.txt', sep=',')
 
 
 geometry = [Point(xy) for xy in zip(bus_stops_df['stop_lon'], bus_stops_df['stop_lat'])]
@@ -9,7 +9,7 @@ geometry = [Point(xy) for xy in zip(bus_stops_df['stop_lon'], bus_stops_df['stop
 
 bus_stops_gdf = gpd.GeoDataFrame(bus_stops_df, geometry=geometry)
 
-census_tracts_gdf = gpd.read_file('../Google_Transit/Census_tracts.geojson')
+census_tracts_gdf = gpd.read_file('Google_Transit/Census_tracts.geojson')
 # Check CRS of both GeoDataFrames
 print(bus_stops_gdf.crs)
 print(census_tracts_gdf.crs)
