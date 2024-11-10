@@ -17,14 +17,14 @@ def load_gtfs_data(folder_path):
     return gtfs_files
 
 
-gtfs_folder_path = "Google_Transit.zip"
+gtfs_folder_path = "Google_Transit"
 gtfs_data = load_gtfs_data(gtfs_folder_path)
 
 # Loaded CSV files
-print("Stops Data:\n", gtfs_data["stops.txt"].head())
-print("Routes Data:\n", gtfs_data["routes.txt"].head())
-print("Trips Data:\n", gtfs_data["trips.txt"].head())
-print("Stop Times Data:\n", gtfs_data["stop_times.txt"].head())
+# print("Stops Data:\n", gtfs_data["stops.txt"].head())
+# print("Routes Data:\n", gtfs_data["routes.txt"].head())
+# print("Trips Data:\n", gtfs_data["trips.txt"].head())
+# print("Stop Times Data:\n", gtfs_data["stop_times.txt"].head())
 
 
 def fetch_realtime_data(endpoint):
