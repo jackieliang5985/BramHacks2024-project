@@ -1,4 +1,4 @@
-from backend.Data import gtfs_data
+
 from numpy import inf
 from test import result
 import math
@@ -8,7 +8,7 @@ from shapely.geometry import Point
 import geopandas as gpd
 
 
-def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='census_tract_id', num_stops = 5):
+def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='census_tract_id', num_stops=5):
     """
     Finds a specified number of bus stops inside a given danger tract.
 
@@ -40,24 +40,22 @@ def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='ce
 
     coords = list(zip(lat, lon))
     # print(stopids)
-    print(coords)
 
     return coords
-
-
 
 
 def find_wards(all_wards, emergency_wards, offset):
     result = []
     for element in all_wards:
         # Check if element is not in emergency_wards and the absolute difference is less than or equal to the offset
-        if element not in emergency_wards and any(abs(element - m) <= offset for m in emergency_wards):
+        if element not in emergency_wards and any(abs(float(element) - m) <= offset for m in emergency_wards):
             result.append(element)
     return result
 
+
 def all_wards(bus_stops_data):
     return result['census_tract_id'].unique().tolist()
-    
+
 
 def calculate_distance(coord1, coord2):
     # Radius of Earth in kilometers
@@ -73,7 +71,7 @@ def calculate_distance(coord1, coord2):
     # Haversine formula
     dlat = lat2 - lat1
     dlon = lon2 - lon1
-    a = math.sin(dlat / 2)**2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2)**2
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
     # Distance in kilometers
@@ -115,13 +113,11 @@ def calculate_distance(coord1, coord2):
 # Example of usage
 
 
-
 emergency_wards = [5350576.69]  # Replace this with actual emergency ward IDs
 allwards = all_wards(result)
-major_stops = find_stops_in_danger_tract(5350576.69, result, "census_tract_id")
-bus_stop_coords = [find_stops_in_danger_tract(safe, result, "census_tract_id", 1) for safe in emergency_wards]
-close_wards = 
-k = find_closest_distance(major_stops, emergency_wards, unique_wards, 0.05)
 
+major_stops = find_stops_in_danger_tract(5350576.69, result, "census_tract_id") # finds 5 random bus stops
 
-print(k)
+close_wards = find_wards(allwards, emergency_wards, 0.1) # finds wards near the emergency wards
+bus_stop_coords = [find_stops_in_danger_tract(float(safe), result, "census_tract_id", 1) for safe in close_wards] # finds 1 random bus stop in the safe wards to connect to (for now its random)
+print (bus_stop_coords)

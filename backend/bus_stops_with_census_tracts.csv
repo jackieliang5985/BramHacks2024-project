@@ -1,4 +1,10 @@
-
+stop_id,stop_name,stop_lat,stop_lon,census_tract_id
+00000020,Kennedy Rd S n/of First Gulf Blvd,43.673257,-79.718469,5350570.01
+00000030,Kennedy Rd s/of Steeles Ave,43.675159,-79.72171,5350570.01
+00000060,Rutherford Rd s/of Bramsteele Rd,43.681968,-79.718981,5350570.01
+00000070,Rutherford Rd S n/of Bramsteele Rd,43.683807,-79.721458,5350570.01
+00000080,Rutherford Rd S at Glidden Rd,43.686334,-79.725066,5350570.01
+00000090,Rutherford Rd S at Selby Rd,43.689013,-79.72896,5350570.01
 00000100,Rutherford Rd S opp Stafford Rd,43.690237,-79.730618,5350570.01
 00000110,Rutherford Rd S at Clarence St,43.691459,-79.731882,5350570.01
 00000120,Orenda Rd e/of Rutherford Rd S,43.695114,-79.73276,5350570.01
