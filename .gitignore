@@ -4,3 +4,7 @@ node_modules/
 
 frontend/.vite/
 backend/__pycache__/
+__pycache__/
+*.pyc
+*.pyo
+backend/myproject/__pycache__
