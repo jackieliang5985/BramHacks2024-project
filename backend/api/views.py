@@ -4,9 +4,11 @@ from rest_framework.response import Response
 import pandas as pd
 import math
 from numpy import inf
+from django.http import JsonResponse
 
 # Load the bus stops data
 bus_stops_data = pd.read_csv('backend/resources/bus_stops_with_census_tracts.csv')
+population_data = pd.read_csv('backend/resources/populations_by_census_tract.csv')
 
 @api_view(['GET'])
 def find_stops_in_danger_tract_view(request):
@@ -42,3 +44,32 @@ def find_wards_view(request):
 def all_wards_view(request):
     wards = bus_stops_data['census_tract_id'].unique().tolist()
     return Response({"all_wards": wards})
+
+@api_view(['GET'])
+def estimated_buses_view(request, tractID):
+    """
+    API view to calculate the estimated number of buses needed for evacuation.
+    """
+    try:
+        buses = calculate_estimated_buses(float(tractID))
+        return JsonResponse({'tractID': tractID, 'estimated_buses': buses})
+    except ValueError:
+        return JsonResponse({'error': 'Invalid tractID'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+def get_population_by_tract(tractID: float) -> int:
+    """
+    Get population of a specific census tract.
+    """
+    row = population_data[population_data['CENSUS TRACT NUMBER'] == tractID]
+    return row['Population, 2021'].item()
+
+def calculate_estimated_buses(tractID: float) -> int:
+    """
+    Calculate estimated number of buses required for evacuation.
+    """
+    population = get_population_by_tract(tractID)
+    population = population // 2        # assume 50% of the population will take car
+    buses = population // 93            # assume a bus can carry up to 93 people
+    return buses
