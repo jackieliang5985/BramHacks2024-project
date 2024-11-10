@@ -1,26 +1,26 @@
-
 from numpy import inf
-from test import result
 import math
-
 import pandas as pd
 from shapely.geometry import Point
 import geopandas as gpd
 
 
-def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='census_tract_id', num_stops=5):
+# Load the bus stops data once to avoid repeated loading in each function
+bus_stops_data = pd.read_csv('backend/resources/bus_stops_with_census_tracts.csv')
+
+def find_stops_in_danger_tract(danger_tract_id, num_stops=5):
     """
     Finds a specified number of bus stops inside a given danger tract.
 
     Parameters:
         danger_tract_id (float): The tract ID of the danger area.
-        bus_stops_data (DataFrame): DataFrame containing bus stops and associated tract IDs.
-        tract_column (str): Name of the column in bus_stops_data that contains the tract ID.
         num_stops (int): The number of stops to return inside the danger tract.
 
     Returns:
-        DataFrame: A DataFrame with the specified number of stops from the danger tract.
+        List of tuples: A list of coordinates (latitude, longitude) of bus stops in the danger tract.
     """
+    tract_column = 'census_tract_id'
+    
     # Ensure the tract_column is converted to float
     bus_stops_data[tract_column] = pd.to_numeric(bus_stops_data[tract_column], errors='coerce')
 
@@ -31,16 +31,11 @@ def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='ce
     selected_stops = stops_in_danger_tract if len(stops_in_danger_tract) <= num_stops else stops_in_danger_tract.sample(
         n=num_stops)
 
-    # Print the selected stops and their details
-    # print(f"Stops inside danger tract {danger_tract_id}:")
-    # print(selected_stops[['stop_id']].to_string(index=False))
-    # stopids = selected_stops['stop_lat', 'stop_lon'].tolist()
+    # Extract latitude and longitude
     lat = selected_stops['stop_lat'].tolist()
     lon = selected_stops['stop_lon'].tolist()
 
     coords = list(zip(lat, lon))
-    # print(stopids)
-
     return coords
 
 
@@ -53,8 +48,9 @@ def find_wards(all_wards, emergency_wards, offset):
     return result
 
 
-def all_wards(bus_stops_data):
-    return result['census_tract_id'].unique().tolist()
+def all_wards():
+    # Load unique census tract IDs from the preloaded bus_stops_data
+    return bus_stops_data['census_tract_id'].unique().tolist()
 
 
 def calculate_distance(coord1, coord2):
@@ -79,45 +75,16 @@ def calculate_distance(coord1, coord2):
     return distance
 
 
-# def find_closest_distance(initial_coords, emergency_wards, all_wards, offset):
-#     """Find the closest bus stop to the initial coordinates that is near an emergency ward."""
-#     # Step 1: Find wards that are close to the emergency wards
-#     safe_zone_bus_stops = find_wards(all_wards, emergency_wards, offset)
-
-#     min_distance = inf
-#     closest_stop = []
-
-#     stops_data = gtfs_data["stops.txt"]  # Assuming 'stops.txt' is the key in gtfs_data
-
-#     # Step 3: Loop through safe zone bus stops to find the closest one
-#     for spot in safe_zone_bus_stops:
-#         # Get latitude and longitude for the bus stop corresponding to the ward
-#         stop_data = [result['stop_id'] == spot]  # Assuming 'ward' corresponds to 'stop_id'
-#         if not stop_data == []:
-#             stop_coords = (result['stop_lat'].values[0], result['stop_lon'].values[0])
-
-#             # Calculate distance from initial coordinates to bus stop coordinates
-#             for i in initial_coords:
-#                 distance = calculate_distance(i, stop_coords)
-
-#             # Update minimum distance and closest stop
-#                 if distance < min_distance:
-#                     min_distance = distance
-#                     closest_stop.append(result['stop_id'].values[0])
-#             min_distance = inf
-
-#     return closest_stop
-
-# def find_closest_distance(initial_coords, emergency_wards):
-
 # Example of usage
-
-
 emergency_wards = [5350576.69]  # Replace this with actual emergency ward IDs
-allwards = all_wards(result)
+allwards = all_wards()
 
-major_stops = find_stops_in_danger_tract(5350576.69, result, "census_tract_id") # finds 5 random bus stops
+# Find 5 random bus stops in the specified danger tract
+major_stops = find_stops_in_danger_tract(5350576.69)
 
-close_wards = find_wards(allwards, emergency_wards, 0.1) # finds wards near the emergency wards
-bus_stop_coords = [find_stops_in_danger_tract(float(safe), result, "census_tract_id", 1) for safe in close_wards] # finds 1 random bus stop in the safe wards to connect to (for now its random)
-print (bus_stop_coords)
+# Find wards near the emergency wards within the given offset
+close_wards = find_wards(allwards, emergency_wards, 0.1)
+
+# Find 1 random bus stop in each safe ward (close ward)
+bus_stop_coords = [find_stops_in_danger_tract(float(safe), 1) for safe in close_wards]
+print(bus_stop_coords)
