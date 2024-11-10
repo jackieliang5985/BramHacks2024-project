@@ -3,3 +3,4 @@ myenv/
 node_modules/
 
 frontend/.vite/
+backend/__pycache__/
