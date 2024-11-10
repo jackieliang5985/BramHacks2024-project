@@ -5,6 +5,7 @@ import pandas as pd
 import math
 from numpy import inf
 from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
 # Load the bus stops data
 bus_stops_data = pd.read_csv('backend/resources/bus_stops_with_census_tracts.csv')
