@@ -58,6 +58,28 @@ def estimated_buses_view(request, tractID):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+@require_GET
+def total_people_affected_view(request):
+    """
+    API endpoint to get total people affected based on a list of census tract IDs.
+    Expects a list of tract IDs as a query parameter.
+    """
+    tract_ids = request.GET.getlist('tracts')
+    total_people = sum(get_population_by_tract(float(tract)) for tract in tract_ids)
+    return JsonResponse({'total_people_affected': total_people})
+
+@require_GET
+def total_buses_view(request):
+    """
+    API endpoint to get total buses required based on a list of census tract IDs.
+    Expects a list of tract IDs as a query parameter.
+    """
+    tract_ids = request.GET.getlist('tracts')
+    total_buses = sum(calculate_estimated_buses(float(tract)) for tract in tract_ids)
+    return JsonResponse({'total_buses_required': total_buses})
+
+
+
 def get_population_by_tract(tractID: float) -> int:
     """
     Get population of a specific census tract.
