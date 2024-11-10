@@ -8,7 +8,7 @@ from shapely.geometry import Point
 import geopandas as gpd
 
 
-def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='census_tract_id', num_stops=5):
+def find_stops_in_danger_tract(danger_tract_id, num_stops=5):
     """
     Finds a specified number of bus stops inside a given danger tract.
 
@@ -21,6 +21,9 @@ def find_stops_in_danger_tract(danger_tract_id, bus_stops_data, tract_column='ce
     Returns:
         DataFrame: A DataFrame with the specified number of stops from the danger tract.
     """
+    tract_column = 'census_tract_id'
+    bus_stops_data = 'backend/resources/bus_stops_with_census_tracts.csv'
+
     # Ensure the tract_column is converted to float
     bus_stops_data[tract_column] = pd.to_numeric(bus_stops_data[tract_column], errors='coerce')
 
@@ -53,8 +56,9 @@ def find_wards(all_wards, emergency_wards, offset):
     return result
 
 
-def all_wards(bus_stops_data):
-    return result['census_tract_id'].unique().tolist()
+def all_wards():
+    bus_stops_data = 'backend/resources/bus_stops_with_census_tracts.csv'
+    return bus_stops_data['census_tract_id'].unique().tolist()
 
 
 def calculate_distance(coord1, coord2):
