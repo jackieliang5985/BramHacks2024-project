@@ -1,5 +1,7 @@
 import pandas as pd
 
+POPULATION_DATA = pd.read_csv('backend/resources/populations_by_census_tract.csv')
+
 def calculate_estimated_buses(tractID: float) -> int:
     """
     Return the estimated number of buses required to evacuate people residing
@@ -12,10 +14,24 @@ def calculate_estimated_buses(tractID: float) -> int:
 
 
 def get_population_by_tract(tractID: float) -> int:
-    population_data = pd.read_csv('backend/resources/populations_by_census_tract.csv')
-    row = population_data[population_data['CENSUS TRACT NUMBER'] == tractID]
+    row = POPULATION_DATA[POPULATION_DATA['CENSUS TRACT NUMBER'] == tractID]
     return row['Population, 2021'].item()
+
+
+def total_people_affected(tracts: list) -> int:
+    total = 0
+    for tractID in tracts:
+        total += get_population_by_tract(tractID)
+    return total
+
+def total_buses(tracts: list) -> int:
+    total = 0
+    for tractID in tracts:
+        total += calculate_estimated_buses(tractID)
+    return total
 
 
 # Example use case
 print(calculate_estimated_buses(5350576.17))
+print(total_people_affected([5350573.09, 5350576.29]))
+print(total_buses([5350573.09, 5350576.29]))
